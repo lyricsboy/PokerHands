@@ -122,6 +122,11 @@ class KnownHandTests: XCTestCase {
         let twosAndThrees = PokerHand(string: "2H 2D 2C 3H 3D")
         XCTAssertNotNil(twosAndThrees)
         XCTAssertGreaterThan(KnownHand.from(pokerHand: threesAndKings!), KnownHand.from(pokerHand: twosAndThrees!))
+        
+        let twosAndAces = PokerHand(string: "2H 2D 2C AH AD")
+        XCTAssertNotNil(twosAndAces)
+        // rank of triple wins over rank of pair
+        XCTAssertGreaterThan(KnownHand.from(pokerHand: threesAndKings!), KnownHand.from(pokerHand: twosAndAces!))
     }
 
 }
