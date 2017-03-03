@@ -78,12 +78,16 @@ enum KnownHand: Equatable {
         }
         
         // four of a kind
-        if let fourOfAKind = rankGroupsSortedByCount.first(where: { $0.value.count == 4}) {
+        if let fourOfAKind = rankGroupsSortedByCount.first, fourOfAKind.value.count == 4 {
             return .fourOfAKind(fourOfAKind.key)
         }
         
         // three of a kind
-        if let threeOfAKind = rankGroupsSortedByCount.first(where: { $0.value.count == 3 }) {
+        if let threeOfAKind = rankGroupsSortedByCount.first, threeOfAKind.value.count == 3 {
+            // check for full house
+            if let pair = rankGroupsSortedByCount.dropFirst().first, pair.value.count == 2 {
+                return .fullHouse(threeOf: threeOfAKind.key, twoOf: pair.key)
+            }
             return .threeOfAKind(threeOfAKind.key)
         }
         
@@ -130,6 +134,8 @@ enum KnownHand: Equatable {
 
 func ==(lhs: KnownHand, rhs: KnownHand) -> Bool {
     switch (lhs, rhs) {
+    case (.fullHouse(let ltriple, let lpair), .fullHouse(let rtriple, let rpair)):
+        return ltriple == rtriple && lpair == rpair
     case (.straightFlush(let lsuit, let lrank), .straightFlush(let rsuit, let rrank)):
         return lsuit == rsuit && lrank == rrank
     case (.flush(let lsuit, let lrank), .flush(let rsuit, let rrank)):
