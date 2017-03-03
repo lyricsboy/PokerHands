@@ -118,4 +118,10 @@ class PokerTests: XCTestCase {
         XCTAssertEqual(KnownHand.from(pokerHand: twoPair!), .twoPair(.four, .ace))
     }
     
+    func testThreeOfAKind() {
+        let threeFours = PokerHand(string: "4H 4C 4S AS KS")
+        XCTAssertNotNil(threeFours)
+        XCTAssertEqual(KnownHand.from(pokerHand: threeFours!), .threeOfAKind(.four))
+    }
+    
 }
