@@ -87,5 +87,41 @@ class KnownHandTests: XCTestCase {
         XCTAssertNotNil(straightFlush)
         XCTAssertEqual(KnownHand.from(pokerHand: straightFlush!), .straightFlush(.heart, .ace))
     }
+    
+    func testComparison() {
+        // reference: http://www.cardplayer.com/rules-of-poker/hand-rankings
+        let orderedHands: [String] = [
+            "AD KD QD JD 0D", // royal flush
+            "8C 7C 6C 5C 4C", // straight flush
+            "JH JD JS JC 7D", // four of a kind
+            "0H 0D 0S 9C 9D", // full house
+            "4S JS 8S 2S 9S", // flush
+            "9C 8D 7S 6D 5H", // straight
+            "7C 7D 7S KC 3D", // three of a kind
+            "4C 4S 3C 3D QS", // two pair
+            "AH AD 8C 4S 7H", // one pair
+            "3D JC 8S 4H 2S", // high card
+        ]
+        let knownHands = orderedHands.flatMap(PokerHand.init).map(KnownHand.from)
+        XCTAssertEqual(orderedHands.count, knownHands.count)
+        var iterator = knownHands.makeIterator()
+        guard let firstHand = iterator.next() else { return }
+        while let nextHand = iterator.next() {
+            XCTAssertGreaterThan(firstHand, nextHand)
+        }
+        
+        // compare two full houses
+        let acesAndKings = PokerHand(string: "AH AS AD KH KS")
+        XCTAssertNotNil(acesAndKings)
+        let acesAndQueens = PokerHand(string: "AH AS AD QH QS")
+        XCTAssertNotNil(acesAndQueens)
+        XCTAssertGreaterThan(KnownHand.from(pokerHand: acesAndKings!), KnownHand.from(pokerHand: acesAndQueens!))
+        
+        let threesAndKings = PokerHand(string: "3D 3H 3S KH KD")
+        XCTAssertNotNil(threesAndKings)
+        let twosAndThrees = PokerHand(string: "2H 2D 2C 3H 3D")
+        XCTAssertNotNil(twosAndThrees)
+        XCTAssertGreaterThan(KnownHand.from(pokerHand: threesAndKings!), KnownHand.from(pokerHand: twosAndThrees!))
+    }
 
 }
