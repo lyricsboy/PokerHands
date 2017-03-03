@@ -146,4 +146,10 @@ class PokerTests: XCTestCase {
         XCTAssertEqual(KnownHand.from(pokerHand: flush!), .flush(.heart, .king))
     }
     
+    func testStraightFlush() {
+        let straightFlush = PokerHand(string: "0H JH KH QH AH")
+        XCTAssertNotNil(straightFlush)
+        XCTAssertEqual(KnownHand.from(pokerHand: straightFlush!), .straightFlush(.heart, .ace))
+    }
+    
 }
