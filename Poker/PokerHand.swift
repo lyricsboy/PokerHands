@@ -110,12 +110,24 @@ enum KnownHand: Equatable {
             return .straight(cardsSortedByRank[0].rank)
         }
         
+        // is it a flush?
+        let highCard = cardsSortedByRank[0]
+        let otherSuitCards = cardsSortedByRank.dropFirst().filter { (card) -> Bool in
+            card.suit != highCard.suit
+        }
+        if otherSuitCards.isEmpty {
+            // no other suits? it's a flush
+            return .flush(highCard.suit, highCard.rank)
+        }
+        
         return .highCard(cardsSortedByRank[0].rank)
     }
 }
 
 func ==(lhs: KnownHand, rhs: KnownHand) -> Bool {
     switch (lhs, rhs) {
+    case (.flush(let lsuit, let lrank), .flush(let rsuit, let rrank)):
+        return lsuit == rsuit && lrank == rrank
     case (.straight(let lrank), .straight(let rrank)):
         return lrank == rrank
     case (.fourOfAKind(let lrank), .fourOfAKind(let rrank)):
