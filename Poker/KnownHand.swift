@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum KnownHand: Equatable {
+enum KnownHand: Equatable, Comparable {
     case highCard(Rank)
     case pair(Rank)
     case twoPair(Rank, Rank)
@@ -85,6 +85,43 @@ enum KnownHand: Equatable {
         
         return .highCard(highCard.rank)
     }
+    
+    fileprivate var compareValue: Int {
+        let handCompareValue: Int
+        let rankCompareValue: Int
+        switch self {
+        case .straightFlush(_, let rank):
+            handCompareValue = 8
+            rankCompareValue = rank.rawValue
+        case .fourOfAKind(let rank):
+            handCompareValue = 7
+            rankCompareValue = rank.rawValue
+        case .fullHouse(threeOf: let threeRank, twoOf: let twoRank):
+            handCompareValue = 6
+            rankCompareValue = threeRank.rawValue + twoRank.rawValue
+        case .flush(_, let rank):
+            handCompareValue = 5
+            rankCompareValue = rank.rawValue
+        case .straight(let rank):
+            handCompareValue = 4
+            rankCompareValue = rank.rawValue
+        case .threeOfAKind(let rank):
+            handCompareValue = 3
+            rankCompareValue = rank.rawValue
+        case .twoPair(let rank1, let rank2):
+            handCompareValue = 2
+            rankCompareValue = rank1.rawValue + rank2.rawValue
+        case .pair(let rank):
+            handCompareValue = 1
+            rankCompareValue = rank.rawValue
+        case .highCard(let rank):
+            handCompareValue = 0
+            rankCompareValue = rank.rawValue
+        }
+        // leave two least-significant bytes for rankCompareValue
+        // remaining most significant bytes are for handCompareValue 
+        return (1 << (2 + handCompareValue)) + rankCompareValue
+    }
 }
 
 func ==(lhs: KnownHand, rhs: KnownHand) -> Bool {
@@ -110,4 +147,8 @@ func ==(lhs: KnownHand, rhs: KnownHand) -> Bool {
     default:
         return false
     }
+}
+
+func <(lhs: KnownHand, rhs: KnownHand) -> Bool {
+    return lhs.compareValue < rhs.compareValue
 }
