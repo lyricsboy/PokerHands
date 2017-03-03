@@ -130,4 +130,14 @@ class PokerTests: XCTestCase {
         XCTAssertEqual(KnownHand.from(pokerHand: fourFours!), .fourOfAKind(.four))
     }
     
+    func testStraight() {
+        let straight = PokerHand(string: "4H 5C 6D 7H 8C")
+        XCTAssertNotNil(straight)
+        XCTAssertEqual(KnownHand.from(pokerHand: straight!), .straight(.eight))
+        
+        let royalStraight = PokerHand(string: "0H JC QH KS AC")
+        XCTAssertNotNil(royalStraight)
+        XCTAssertEqual(KnownHand.from(pokerHand: royalStraight!), .straight(.ace))
+    }
+    
 }

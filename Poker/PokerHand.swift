@@ -91,13 +91,29 @@ enum KnownHand: Equatable {
         } else if pairs.count == 1 {
             return .pair(pairs[0].key)
         }
-
+        
+        // at this point we know there are no two cards of the same rank
+        
+        // is it a straight?
+        var totalDelta: Int = 0
+        var previousCard: Card = cardsSortedByRank[0]
+        cardsSortedByRank.dropFirst().forEach { (card) in
+            totalDelta += previousCard.rank.rawValue - card.rank.rawValue
+            previousCard = card
+        }
+        if totalDelta == cardsSortedByRank.count - 1 {
+            // we have a straight
+            return .straight(cardsSortedByRank[0].rank)
+        }
+        
         return .highCard(cardsSortedByRank[0].rank)
     }
 }
 
 func ==(lhs: KnownHand, rhs: KnownHand) -> Bool {
     switch (lhs, rhs) {
+    case (.straight(let lrank), .straight(let rrank)):
+        return lrank == rrank
     case (.fourOfAKind(let lrank), .fourOfAKind(let rrank)):
         return lrank == rrank
     case (.threeOfAKind(let lrank), .threeOfAKind(let rrank)):
@@ -108,7 +124,6 @@ func ==(lhs: KnownHand, rhs: KnownHand) -> Bool {
         return lrank == rrank
     case (.highCard(let lrank), .highCard(let rrank)):
         return lrank == rrank
-    // TODO: The rest of them
     default:
         return false
     }
