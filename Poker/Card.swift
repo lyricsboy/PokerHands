@@ -13,6 +13,8 @@ enum Suit: String {
     case club = "C"
     case diamond = "D"
     case spade = "S"
+    
+    static let allSuits: [Suit] = [.club, .diamond, .heart, .spade]
 }
 
 enum Rank: Int {
@@ -44,6 +46,7 @@ enum Rank: Int {
         }
     }
     
+    static let allRanks: [Rank] = [.two, .three, .four, .five, .six, .seven, .eight, .nine, .ten, .jack, .queen, .king, .ace]
 }
 
 extension Rank: Comparable { }

@@ -24,10 +24,8 @@ class DeckTests: XCTestCase {
     func testStandardDeck() {
         let deck = Deck()
         XCTAssertEqual(deck.cards.count, 52)
-        let suits: [Suit] = [.club, .diamond, .heart, .spade]
-        let ranks: [Rank] = [.two, .three, .four, .five, .six, .seven, .eight, .nine, .ten, .jack, .queen, .king, .ace]
-        let expectedCards = suits.flatMap { suit in
-            ranks.map { rank in
+        let expectedCards = Suit.allSuits.flatMap { suit in
+            Rank.allRanks.map { rank in
                 Card(suit: suit, rank: rank)
             }
         }
