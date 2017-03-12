@@ -13,8 +13,13 @@ struct Deck {
     private(set) var cards: [Card]
     
     init() {
-        cards = []
+        let suits: [Suit] = [.club, .diamond, .heart, .spade]
+        let ranks: [Rank] = [.two, .three, .four, .five, .six, .seven, .eight, .nine, .ten, .jack, .queen, .king, .ace]
+        cards = suits.flatMap { suit in
+            ranks.map { rank in
+                Card(suit: suit, rank: rank)
+            }
+        }
     }
-    
     
 }
