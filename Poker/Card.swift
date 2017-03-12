@@ -55,7 +55,7 @@ func <(lhs: Rank, rhs: Rank) -> Bool {
     return lhs.rawValue < rhs.rawValue
 }
 
-struct Card: Equatable {
+public struct Card: Equatable {
     let suit: Suit
     let rank: Rank
     
@@ -82,13 +82,13 @@ struct Card: Equatable {
     }
 }
 
-func ==(lhs: Card, rhs: Card) -> Bool {
+public func ==(lhs: Card, rhs: Card) -> Bool {
     return lhs.suit == rhs.suit && lhs.rank == rhs.rank
 }
 
 extension Card: Hashable {
     
-    var hashValue: Int {
+    public var hashValue: Int {
         return suit.hashValue ^ rank.hashValue
     }
 }

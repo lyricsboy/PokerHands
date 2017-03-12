@@ -9,11 +9,11 @@
 import Foundation
 import GameplayKit
 
-struct Deck {
+public struct Deck {
     
-    private(set) var cards: [Card]
+    public private(set) var cards: [Card]
     
-    init() {
+    public init() {
         cards = Suit.allSuits.flatMap { suit in
             Rank.allRanks.map { rank in
                 Card(suit: suit, rank: rank)
@@ -21,8 +21,14 @@ struct Deck {
         }
     }
     
-    mutating func shuffle() {
-        cards = GKRandomSource.sharedRandom().arrayByShufflingObjects(in: cards) as! [Card]
+    public mutating func shuffle(seed: UInt64? = nil) {
+        let randomSource: GKRandomSource
+        if let seed = seed {
+            randomSource = GKLinearCongruentialRandomSource(seed: seed)
+        } else {
+            randomSource = GKRandomSource.sharedRandom()
+        }
+        cards = randomSource.arrayByShufflingObjects(in: cards) as! [Card]
     }
     
 }
