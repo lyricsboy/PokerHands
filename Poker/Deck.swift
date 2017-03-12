@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import GameplayKit
 
 struct Deck {
     
@@ -21,7 +22,7 @@ struct Deck {
     }
     
     mutating func shuffle() {
-        
+        cards = GKRandomSource.sharedRandom().arrayByShufflingObjects(in: cards) as! [Card]
     }
     
 }
