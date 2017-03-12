@@ -41,5 +41,14 @@ class DeckTests: XCTestCase {
         shuffledDeck2.shuffle(seed: 1)
         XCTAssertEqual(shuffledDeck.cards, shuffledDeck2.cards)
     }
+    
+    func testDeal() {
+        var deck = Deck()
+        let hand1 = deck.deal(5)
+        XCTAssertEqual(hand1?.count, 5)
+        XCTAssertEqual(deck.cards.count, 47)
+        let bigHand = deck.deal(500)
+        XCTAssertNil(bigHand)
+    }
 
 }

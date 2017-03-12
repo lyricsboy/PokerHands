@@ -31,4 +31,14 @@ public struct Deck {
         cards = randomSource.arrayByShufflingObjects(in: cards) as! [Card]
     }
     
+    public mutating func deal(_ count: UInt) -> [Card]? {
+        let intCount = Int(count)
+        let dealtCards = cards.prefix(intCount)
+        guard dealtCards.count == intCount else {
+            return nil
+        }
+        cards.removeFirst(intCount)
+        return Array(dealtCards)
+    }
+    
 }
