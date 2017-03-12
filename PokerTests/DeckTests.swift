@@ -31,5 +31,12 @@ class DeckTests: XCTestCase {
         }
         XCTAssertEqual(deck.cards, expectedCards)
     }
+    
+    func testShuffle() {
+        let standardDeck = Deck()
+        var shuffledDeck = standardDeck
+        shuffledDeck.shuffle()
+        XCTAssertNotEqual(standardDeck.cards, shuffledDeck.cards)
+    }
 
 }

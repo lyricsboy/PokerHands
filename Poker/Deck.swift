@@ -20,4 +20,8 @@ struct Deck {
         }
     }
     
+    mutating func shuffle() {
+        
+    }
+    
 }
