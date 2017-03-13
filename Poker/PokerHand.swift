@@ -12,6 +12,14 @@ struct PokerHand {
     
     let cards: [Card]
     
+    init?(cards: [Card]) {
+        // only a five-card hand of non-duplicates is valid
+        guard Array(Set<Card>(cards)).count == 5 else {
+            return nil
+        }
+        self.cards = cards
+    }
+    
     init?(string: String) {
         let stringCards = string.components(separatedBy: " ")
         guard stringCards.count == 5 else {
@@ -20,11 +28,7 @@ struct PokerHand {
         let validCards = stringCards.flatMap {
             Card(string: $0)
         }
-        // only a five-card hand of non-duplicates is valid
-        guard Array(Set<Card>(validCards)).count == 5 else {
-            return nil
-        }
-        self.cards = validCards
+        self.init(cards: validCards)
     }
     
     func cardsGroupedByRank() -> [Rank: [Card]] {

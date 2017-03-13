@@ -7,6 +7,7 @@
 //
 
 import XCTest
+import GameplayKit
 @testable import Poker
 
 class KnownHandTests: XCTestCase {
@@ -127,6 +128,26 @@ class KnownHandTests: XCTestCase {
         XCTAssertNotNil(twosAndAces)
         // rank of triple wins over rank of pair
         XCTAssertGreaterThan(KnownHand.from(pokerHand: threesAndKings!), KnownHand.from(pokerHand: twosAndAces!))
+    }
+    
+    func testPerformance_Comparison() {
+        let handCount = 10_000
+        var deck = Deck()
+        deck.shuffle()
+        var hands: [PokerHand] = []
+        while hands.count < handCount {
+            if let hand = deck.deal(5).flatMap(PokerHand.init) {
+                hands.append(hand)
+            } else {
+                // we couldn't get 5 cards out
+                deck = Deck()
+                deck.shuffle()
+            }
+        }
+        let knownHands = hands.map(KnownHand.from)
+        measure {
+            let _ = knownHands.sorted()
+        }
     }
 
 }
