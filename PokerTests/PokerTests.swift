@@ -85,4 +85,15 @@ class PokerTests: XCTestCase {
             }
         }
     }
+    
+    func testHighCard() {
+        let aceHigh = PokerHand(string: "4H 3D QD JD AH")
+        XCTAssertNotNil(aceHigh)
+        XCTAssertEqual(KnownHand.from(pokerHand: aceHigh!), .highCard(.ace))
+        
+        let sevenHigh = PokerHand(string: "4H 3D 5S 2S 7C")
+        XCTAssertNotNil(sevenHigh)
+        XCTAssertEqual(KnownHand.from(pokerHand: sevenHigh!), .highCard(.seven))
+    }
+    
 }
