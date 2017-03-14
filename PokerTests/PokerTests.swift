@@ -29,6 +29,15 @@ class PokerTests: XCTestCase {
         // verify that it has the right cards
         XCTAssertNotNil(hand)
         XCTAssertEqual(hand?.cards.count, 5)
-    }
         
+        let expectedCards: [Card] = [
+            Card(suit: .heart, rank: .four),
+            Card(suit: .spade, rank: .four),
+            Card(suit: .diamond, rank: .four),
+            Card(suit: .spade, rank: .nine),
+            Card(suit: .diamond, rank: .nine)
+        ]
+        XCTAssertEqual(hand!.cards, expectedCards)
+    }
+    
 }
