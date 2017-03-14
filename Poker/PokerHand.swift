@@ -57,7 +57,12 @@ enum KnownHand: Equatable {
     case pair(Rank)
     case twoPair(Rank, Rank)
     case threeOfAKind(Rank)
-
+    case straight(Rank)
+    case flush(Suit, Rank)
+    case fullHouse(threeOf: Rank, twoOf: Rank)
+    case fourOfAKind(Rank)
+    case straightFlush(Suit, Rank)
+    
     static func from(pokerHand: PokerHand) -> KnownHand {
         // prefer the best hand
         
@@ -94,6 +99,14 @@ enum KnownHand: Equatable {
         
         // at this point we know there are no two cards of the same rank
         
+        // is it a flush?
+        let highCard = cardsSortedByRank[0]
+        let otherSuitCards = cardsSortedByRank.dropFirst().filter { (card) -> Bool in
+            card.suit != highCard.suit
+        }
+        // no other suits? it's a flush
+        let isFlush = otherSuitCards.isEmpty
+
         // is it a straight?
         var totalDelta: Int = 0
         var previousCard: Card = cardsSortedByRank[0]
@@ -101,27 +114,24 @@ enum KnownHand: Equatable {
             totalDelta += previousCard.rank.rawValue - card.rank.rawValue
             previousCard = card
         }
-        if totalDelta == cardsSortedByRank.count - 1 {
-            // we have a straight
-            return .straight(cardsSortedByRank[0].rank)
-        }
-        
-        // is it a flush?
-        let highCard = cardsSortedByRank[0]
-        let otherSuitCards = cardsSortedByRank.dropFirst().filter { (card) -> Bool in
-            card.suit != highCard.suit
-        }
-        if otherSuitCards.isEmpty {
-            // no other suits? it's a flush
+        let isStraight = totalDelta == cardsSortedByRank.count - 1
+            
+        if isStraight && isFlush {
+            return .straightFlush(highCard.suit, highCard.rank)
+        } else if isStraight {
+            return .straight(highCard.rank)
+        } else if isFlush {
             return .flush(highCard.suit, highCard.rank)
         }
         
-        return .highCard(cardsSortedByRank[0].rank)
+        return .highCard(highCard.rank)
     }
 }
 
 func ==(lhs: KnownHand, rhs: KnownHand) -> Bool {
     switch (lhs, rhs) {
+    case (.straightFlush(let lsuit, let lrank), .straightFlush(let rsuit, let rrank)):
+        return lsuit == rsuit && lrank == rrank
     case (.flush(let lsuit, let lrank), .flush(let rsuit, let rrank)):
         return lsuit == rsuit && lrank == rrank
     case (.straight(let lrank), .straight(let rrank)):
