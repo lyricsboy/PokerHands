@@ -19,11 +19,11 @@ class KnownHandTests: XCTestCase {
     func testHighCard() {
         let aceHigh = PokerHand(string: "4H 3D QD JD AH")
         XCTAssertNotNil(aceHigh)
-        XCTAssertEqual(KnownHand.from(pokerHand: aceHigh!), .highCard(.ace))
+        XCTAssertEqual(KnownHand.from(pokerHand: aceHigh!), .highCard([.ace, .queen, .jack, .four, .three]))
         
         let sevenHigh = PokerHand(string: "4H 3D 5S 2S 7C")
         XCTAssertNotNil(sevenHigh)
-        XCTAssertEqual(KnownHand.from(pokerHand: sevenHigh!), .highCard(.seven))
+        XCTAssertEqual(KnownHand.from(pokerHand: sevenHigh!), .highCard([.seven, .five, .four, .three, .two]))
     }
     
     func testPairs() {
@@ -135,6 +135,12 @@ class KnownHandTests: XCTestCase {
         let kingHighNine = PokerHand(string: "KH 9S 2C 3H 4C")
         XCTAssertNotNil(kingHighNine)
         XCTAssertGreaterThan(KnownHand.from(pokerHand: kingHighTen!), KnownHand.from(pokerHand: kingHighNine!))
+        
+        let lastCardThree = PokerHand(string: "KH QC JS 0S 3C")
+        XCTAssertNotNil(lastCardThree)
+        let lastCardTwo = PokerHand(string: "KH QC JS 0S 2C")
+        XCTAssertNotNil(lastCardTwo)
+        XCTAssertGreaterThan(KnownHand.from(pokerHand: lastCardThree!), KnownHand.from(pokerHand: lastCardTwo!))
     }
     
 }

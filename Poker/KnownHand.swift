@@ -9,7 +9,7 @@
 import Foundation
 
 enum KnownHand: Equatable, Comparable {
-    case highCard(Rank)
+    case highCard([Rank])
     case pair(Rank)
     case twoPair(Rank, Rank)
     case threeOfAKind(Rank)
@@ -83,44 +83,46 @@ enum KnownHand: Equatable, Comparable {
             return .flush(highCard.suit, highCard.rank)
         }
         
-        return .highCard(highCard.rank)
+        return .highCard(cardsSortedByRank.map { $0.rank })
     }
     
-    fileprivate var compareValue: Int {
+    fileprivate var compareValue: Int64 {
         let handCompareValue: Int
-        let rankCompareValue: Int
+        let rankCompareValue: Int64
         switch self {
         case .straightFlush(_, let rank):
             handCompareValue = 8
-            rankCompareValue = rank.rawValue
+            rankCompareValue = Int64(rank.rawValue)
         case .fourOfAKind(let rank):
             handCompareValue = 7
-            rankCompareValue = rank.rawValue
+            rankCompareValue = Int64(rank.rawValue)
         case .fullHouse(threeOf: let threeRank, twoOf: let twoRank):
             handCompareValue = 6
-            rankCompareValue = (threeRank.rawValue << 1) + twoRank.rawValue
+            rankCompareValue = Int64((threeRank.rawValue << 1) + twoRank.rawValue)
         case .flush(_, let rank):
             handCompareValue = 5
-            rankCompareValue = rank.rawValue
+            rankCompareValue = Int64(rank.rawValue)
         case .straight(let rank):
             handCompareValue = 4
-            rankCompareValue = rank.rawValue
+            rankCompareValue = Int64(rank.rawValue)
         case .threeOfAKind(let rank):
             handCompareValue = 3
-            rankCompareValue = rank.rawValue
+            rankCompareValue = Int64(rank.rawValue)
         case .twoPair(let rank1, let rank2):
             handCompareValue = 2
-            rankCompareValue = rank1.rawValue + rank2.rawValue
+            rankCompareValue = Int64(rank1.rawValue + rank2.rawValue)
         case .pair(let rank):
             handCompareValue = 1
-            rankCompareValue = rank.rawValue
-        case .highCard(let rank):
+            rankCompareValue = Int64(rank.rawValue)
+        case .highCard(let ranks):
             handCompareValue = 0
-            rankCompareValue = rank.rawValue
+            rankCompareValue = ranks.enumerated().reduce(0, { (total, current: (offset: Int, rank: Rank)) -> Int64 in
+                total + (current.rank.rawValue << (ranks.count - 1) - current.offset)
+            })
         }
-        // leave two least-significant bytes for rankCompareValue
-        // remaining most significant bytes are for handCompareValue 
-        return (1 << (2 + handCompareValue)) + rankCompareValue
+        // leave five least-significant bytes for rankCompareValue
+        // remaining most significant bytes are for handCompareValue
+        return (1 << (5 + handCompareValue)) + rankCompareValue
     }
 }
 
@@ -142,8 +144,8 @@ func ==(lhs: KnownHand, rhs: KnownHand) -> Bool {
         return lrank1 == rrank1 && lrank2 == rrank2
     case (.pair(let lrank), .pair(let rrank)):
         return lrank == rrank
-    case (.highCard(let lrank), .highCard(let rrank)):
-        return lrank == rrank
+    case (.highCard(let lranks), .highCard(let rranks)):
+        return lranks == rranks
     default:
         return false
     }
