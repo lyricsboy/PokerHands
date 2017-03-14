@@ -11,7 +11,7 @@ import Foundation
 enum KnownHand: Equatable, Comparable {
     case highCard([Rank])
     case pair(pairRank: Rank, otherRanks: [Rank])
-    case twoPair(Rank, Rank)
+    case twoPair(highPairRank: Rank, lowPairRank: Rank, otherRank: Rank)
     case threeOfAKind(Rank)
     case straight(Rank)
     case flush(Suit, Rank)
@@ -49,9 +49,11 @@ enum KnownHand: Equatable, Comparable {
         // pairs
         let pairs = rankGroupsSortedByCount.filter { (rankCards) -> Bool in
             rankCards.value.count == 2
+        }.sorted { (rankGroup1, rankGroup2) -> Bool in
+            return rankGroup1.key > rankGroup2.key
         }
         if pairs.count == 2 {
-            return .twoPair(pairs[0].key, pairs[1].key)
+            return .twoPair(highPairRank: pairs[0].key, lowPairRank: pairs[1].key, otherRank: rankGroupsSortedByCount.dropFirst(2).first!.key)
         } else if pairs.count == 1 {
             return .pair(pairRank: pairs[0].key, otherRanks: rankGroupsSortedByCount.dropFirst().map { $0.key }.sorted().reversed())
         }
@@ -108,9 +110,9 @@ enum KnownHand: Equatable, Comparable {
         case .threeOfAKind(let rank):
             handCompareValue = 3
             rankCompareValue = Int64(rank.rawValue)
-        case .twoPair(let rank1, let rank2):
+        case .twoPair(let highPairRank, let lowPairRank, let otherRank):
             handCompareValue = 2
-            rankCompareValue = Int64(rank1.rawValue + rank2.rawValue)
+            rankCompareValue = [highPairRank, lowPairRank, otherRank].compareValue
         case .pair(let pairRank, let otherRanks):
             handCompareValue = 1
             rankCompareValue = ([pairRank] + otherRanks).compareValue
@@ -147,8 +149,8 @@ func ==(lhs: KnownHand, rhs: KnownHand) -> Bool {
         return lrank == rrank
     case (.threeOfAKind(let lrank), .threeOfAKind(let rrank)):
         return lrank == rrank
-    case (.twoPair(let lrank1, let lrank2), .twoPair(let rrank1, let rrank2)):
-        return lrank1 == rrank1 && lrank2 == rrank2
+    case (.twoPair(let lhighPairRank, let llowPairRank, let lotherRank), .twoPair(let rhighPairRank, let rlowPairRank, let rotherRank)):
+        return lhighPairRank == rhighPairRank && llowPairRank == rlowPairRank && lotherRank == rotherRank
     case (.pair(let lpairRank, let lotherRanks), .pair(let rpairRank, let rotherRanks)):
         return lpairRank == rpairRank && lotherRanks == rotherRanks
     case (.highCard(let lranks), .highCard(let rranks)):
