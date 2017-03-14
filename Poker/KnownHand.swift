@@ -22,9 +22,6 @@ enum KnownHand: Equatable, Comparable {
     static func from(pokerHand: PokerHand) -> KnownHand {
         // prefer the best hand
         
-        let cardsSortedByRank = pokerHand.cards.sorted {
-            $0.rank > $1.rank
-        }
         // how many cards are there for each rank?
         let cardsGroupedByRank = pokerHand.cardsGroupedByRank()
         
@@ -64,7 +61,11 @@ enum KnownHand: Equatable, Comparable {
         }
         
         // at this point we know there are no two cards of the same rank
-        
+
+        let cardsSortedByRank = pokerHand.cards.sorted {
+            $0.rank > $1.rank
+        }
+
         // is it a flush?
         let highCard = cardsSortedByRank[0]
         let otherSuitCards = cardsSortedByRank.dropFirst().filter { (card) -> Bool in
