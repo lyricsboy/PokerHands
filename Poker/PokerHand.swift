@@ -46,6 +46,35 @@ enum Rank: Int {
     
 }
 
+extension Rank: Comparable { }
+
+func <(lhs: Rank, rhs: Rank) -> Bool {
+    return lhs.rawValue < rhs.rawValue
+}
+
+enum KnownHand: Equatable {
+    case highCard(Rank)
+
+    static func from(pokerHand: PokerHand) -> KnownHand {
+        // prefer the best hand
+        
+        let cardsSortedByRank = pokerHand.cards.sorted {
+            $0.rank > $1.rank
+        }
+        return .highCard(cardsSortedByRank[0].rank)
+    }
+}
+
+func ==(lhs: KnownHand, rhs: KnownHand) -> Bool {
+    switch (lhs, rhs) {
+    case (.highCard(let lrank), .highCard(let rrank)):
+        return lrank == rrank
+    // TODO: The rest of them
+    default:
+        return false
+    }
+}
+
 struct Card: Equatable {
     let suit: Suit
     let rank: Rank
