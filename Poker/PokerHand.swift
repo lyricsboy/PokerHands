@@ -56,6 +56,7 @@ enum KnownHand: Equatable {
     case highCard(Rank)
     case pair(Rank)
     case twoPair(Rank, Rank)
+    case threeOfAKind(Rank)
 
     static func from(pokerHand: PokerHand) -> KnownHand {
         // prefer the best hand
@@ -67,11 +68,18 @@ enum KnownHand: Equatable {
         // how many cards are there for each rank?
         let cardsGroupedByRank = pokerHand.cardsGroupedByRank()
         
-        // pairs
-        let pairs = cardsGroupedByRank.sorted { (leftRankCards, rightRankCards) -> Bool in
+        let sortedRankGroups = cardsGroupedByRank.sorted { (leftRankCards, rightRankCards) -> Bool in
             return leftRankCards.value.count > rightRankCards.value.count
-        }.filter { (rankCards) -> Bool in
-                rankCards.value.count == 2
+        }
+        
+        // three of a kind
+        if let threeOfAKind = sortedRankGroups.first(where: { $0.value.count == 3 }) {
+            return .threeOfAKind(threeOfAKind.key)
+        }
+        
+        // pairs
+        let pairs = sortedRankGroups.filter { (rankCards) -> Bool in
+            rankCards.value.count == 2
         }
         if pairs.count == 2 {
             return .twoPair(pairs[0].key, pairs[1].key)
@@ -85,6 +93,8 @@ enum KnownHand: Equatable {
 
 func ==(lhs: KnownHand, rhs: KnownHand) -> Bool {
     switch (lhs, rhs) {
+    case (.threeOfAKind(let lrank), .threeOfAKind(let rrank)):
+        return lrank == rrank
     case (.twoPair(let lrank1, let lrank2), .twoPair(let rrank1, let rrank2)):
         return lrank1 == rrank1 && lrank2 == rrank2
     case (.pair(let lrank), .pair(let rrank)):
