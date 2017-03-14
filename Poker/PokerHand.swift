@@ -73,8 +73,10 @@ enum KnownHand: Equatable {
         }.filter { (rankCards) -> Bool in
                 rankCards.value.count == 2
         }
-        if let pairGroup = pairs.first {
-            return .pair(pairGroup.key)
+        if pairs.count == 2 {
+            return .twoPair(pairs[0].key, pairs[1].key)
+        } else if pairs.count == 1 {
+            return .pair(pairs[0].key)
         }
 
         return .highCard(cardsSortedByRank[0].rank)
