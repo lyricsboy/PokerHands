@@ -32,6 +32,11 @@ enum KnownHand: Equatable, Comparable {
             return leftRankCards.value.count > rightRankCards.value.count
         }
         
+        // convenience function to DRY this particular sorting code
+        func sortedRanksFromRankGroups(_ rankGroups: ArraySlice<(key: Rank, value: [Card])>) -> [Rank] {
+            return rankGroups.map { $0.key }.sorted().reversed()
+        }
+        
         // four of a kind
         if let fourOfAKind = rankGroupsSortedByCount.first, fourOfAKind.value.count == 4 {
             return .fourOfAKind(fourOfAKind.key)
@@ -43,7 +48,7 @@ enum KnownHand: Equatable, Comparable {
             if let pair = rankGroupsSortedByCount.dropFirst().first, pair.value.count == 2 {
                 return .fullHouse(threeOf: threeOfAKind.key, twoOf: pair.key)
             }
-            return .threeOfAKind(threeRank: threeOfAKind.key, otherRanks: rankGroupsSortedByCount.dropFirst().map { $0.key }.sorted().reversed())
+            return .threeOfAKind(threeRank: threeOfAKind.key, otherRanks: sortedRanksFromRankGroups(rankGroupsSortedByCount.dropFirst()))
         }
         
         // pairs
@@ -55,7 +60,7 @@ enum KnownHand: Equatable, Comparable {
         if pairs.count == 2 {
             return .twoPair(highPairRank: pairs[0].key, lowPairRank: pairs[1].key, otherRank: rankGroupsSortedByCount.dropFirst(2).first!.key)
         } else if pairs.count == 1 {
-            return .pair(pairRank: pairs[0].key, otherRanks: rankGroupsSortedByCount.dropFirst().map { $0.key }.sorted().reversed())
+            return .pair(pairRank: pairs[0].key, otherRanks: sortedRanksFromRankGroups(rankGroupsSortedByCount.dropFirst()))
         }
         
         // at this point we know there are no two cards of the same rank
