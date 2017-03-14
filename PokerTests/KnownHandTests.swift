@@ -128,5 +128,13 @@ class KnownHandTests: XCTestCase {
         // rank of triple wins over rank of pair
         XCTAssertGreaterThan(KnownHand.from(pokerHand: threesAndKings!), KnownHand.from(pokerHand: twosAndAces!))
     }
-
+    
+    func testComparison_HighCards() {
+        let kingHighTen = PokerHand(string: "KH 0S 2C 3H 4C")
+        XCTAssertNotNil(kingHighTen)
+        let kingHighNine = PokerHand(string: "KH 9S 2C 3H 4C")
+        XCTAssertNotNil(kingHighNine)
+        XCTAssertGreaterThan(KnownHand.from(pokerHand: kingHighTen!), KnownHand.from(pokerHand: kingHighNine!))
+    }
+    
 }
