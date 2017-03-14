@@ -62,6 +62,20 @@ enum KnownHand: Equatable {
         let cardsSortedByRank = pokerHand.cards.sorted {
             $0.rank > $1.rank
         }
+
+        // how many cards are there for each rank?
+        let cardsGroupedByRank = pokerHand.cardsGroupedByRank()
+        
+        // pairs
+        let pairs = cardsGroupedByRank.sorted { (leftRankCards, rightRankCards) -> Bool in
+            return leftRankCards.value.count > rightRankCards.value.count
+        }.filter { (rankCards) -> Bool in
+                rankCards.value.count == 2
+        }
+        if let pairGroup = pairs.first {
+            return .pair(pairGroup.key)
+        }
+
         return .highCard(cardsSortedByRank[0].rank)
     }
 }
@@ -134,6 +148,16 @@ struct PokerHand {
             return nil
         }
         self.cards = validCards
+    }
+    
+    func cardsGroupedByRank() -> [Rank: [Card]] {
+        var cardsByRank: [Rank: [Card]] = [:]
+        for card in cards {
+            var existingCards = cardsByRank[card.rank] ?? []
+            existingCards.append(card)
+            cardsByRank[card.rank] = existingCards
+        }
+        return cardsByRank
     }
     
 }
