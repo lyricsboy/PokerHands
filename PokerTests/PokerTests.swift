@@ -40,4 +40,19 @@ class PokerTests: XCTestCase {
         XCTAssertEqual(hand!.cards, expectedCards)
     }
     
+    func testCreateHandFromInvalidString() {
+        var invalidHand = ""
+        
+        var hand = PokerHand(string: invalidHand)
+        XCTAssertNil(hand)
+        
+        invalidHand = "100J 2H 5K 2Q ZX"
+        hand = PokerHand(string: invalidHand)
+        XCTAssertNil(hand)
+        
+        invalidHand = "JH JH 4H AH KH" // two of the same card (Jack of Hearts)
+        hand = PokerHand(string: invalidHand)
+        XCTAssertNil(hand)
+    }
+    
 }
