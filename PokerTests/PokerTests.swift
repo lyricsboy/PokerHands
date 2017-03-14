@@ -111,4 +111,11 @@ class PokerTests: XCTestCase {
         knownHand = KnownHand.from(pokerHand: pairOfQueensHand!)
         XCTAssertEqual(knownHand, KnownHand.pair(.queen))
     }
+    
+    func testTwoPair() {
+        let twoPair = PokerHand(string: "4H 4C 2C AH AC")
+        XCTAssertNotNil(twoPair)
+        XCTAssertEqual(KnownHand.from(pokerHand: twoPair!), .twoPair(.four, .ace))
+    }
+
 }
