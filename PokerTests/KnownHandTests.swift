@@ -79,7 +79,7 @@ class KnownHandTests: XCTestCase {
     func testFlush() {
         let flush = PokerHand(string: "4H 5H 9H 7H KH")
         XCTAssertNotNil(flush)
-        XCTAssertEqual(KnownHand.from(pokerHand: flush!), .flush(.heart, .king))
+        XCTAssertEqual(KnownHand.from(pokerHand: flush!), .flush(suit: .heart, ranks: [.king, .nine, .seven, .five, .four]))
     }
     
     func testStraightFlush() {
@@ -159,6 +159,12 @@ class KnownHandTests: XCTestCase {
         let threeJacksFiveFour = KnownHand.threeOfAKind(threeRank: .jack, otherRanks: [.five, .four])
         let threeJacksFiveThree = KnownHand.threeOfAKind(threeRank: .jack, otherRanks: [.five, .three])
         XCTAssertGreaterThan(threeJacksFiveFour, threeJacksFiveThree)
+    }
+    
+    func testComparison_Flush() {
+        let heartFlushLowThree = KnownHand.flush(suit: .heart, ranks: [.jack, .seven, .six, .five, .three])
+        let heartFlushLowTwo = KnownHand.flush(suit: .heart, ranks: [.jack, .seven, .six, .five, .two])
+        XCTAssertGreaterThan(heartFlushLowThree, heartFlushLowTwo)
     }
     
 }

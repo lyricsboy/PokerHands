@@ -14,7 +14,7 @@ enum KnownHand: Equatable, Comparable {
     case twoPair(highPairRank: Rank, lowPairRank: Rank, otherRank: Rank)
     case threeOfAKind(threeRank: Rank, otherRanks: [Rank])
     case straight(Rank)
-    case flush(Suit, Rank)
+    case flush(suit: Suit, ranks: [Rank])
     case fullHouse(threeOf: Rank, twoOf: Rank)
     case fourOfAKind(Rank)
     case straightFlush(Suit, Rank)
@@ -33,7 +33,7 @@ enum KnownHand: Equatable, Comparable {
         }
         
         // convenience function to DRY this particular sorting code
-        func sortedRanksFromRankGroups(_ rankGroups: ArraySlice<(key: Rank, value: [Card])>) -> [Rank] {
+        func sortedRanksFromRankGroups(_ rankGroups: AnyRandomAccessCollection<(key: Rank, value: [Card])>) -> [Rank] {
             return rankGroups.map { $0.key }.sorted().reversed()
         }
         
@@ -48,7 +48,7 @@ enum KnownHand: Equatable, Comparable {
             if let pair = rankGroupsSortedByCount.dropFirst().first, pair.value.count == 2 {
                 return .fullHouse(threeOf: threeOfAKind.key, twoOf: pair.key)
             }
-            return .threeOfAKind(threeRank: threeOfAKind.key, otherRanks: sortedRanksFromRankGroups(rankGroupsSortedByCount.dropFirst()))
+            return .threeOfAKind(threeRank: threeOfAKind.key, otherRanks: sortedRanksFromRankGroups(AnyRandomAccessCollection(rankGroupsSortedByCount.dropFirst())))
         }
         
         // pairs
@@ -60,7 +60,7 @@ enum KnownHand: Equatable, Comparable {
         if pairs.count == 2 {
             return .twoPair(highPairRank: pairs[0].key, lowPairRank: pairs[1].key, otherRank: rankGroupsSortedByCount.dropFirst(2).first!.key)
         } else if pairs.count == 1 {
-            return .pair(pairRank: pairs[0].key, otherRanks: sortedRanksFromRankGroups(rankGroupsSortedByCount.dropFirst()))
+            return .pair(pairRank: pairs[0].key, otherRanks: sortedRanksFromRankGroups(AnyRandomAccessCollection(rankGroupsSortedByCount.dropFirst())))
         }
         
         // at this point we know there are no two cards of the same rank
@@ -87,7 +87,7 @@ enum KnownHand: Equatable, Comparable {
         } else if isStraight {
             return .straight(highCard.rank)
         } else if isFlush {
-            return .flush(highCard.suit, highCard.rank)
+            return .flush(suit: highCard.suit, ranks: sortedRanksFromRankGroups(AnyRandomAccessCollection(rankGroupsSortedByCount)))
         }
         
         return .highCard(cardsSortedByRank.map { $0.rank })
@@ -106,9 +106,9 @@ enum KnownHand: Equatable, Comparable {
         case .fullHouse(threeOf: let threeRank, twoOf: let twoRank):
             handCompareValue = 6
             rankCompareValue = Int64((threeRank.rawValue << 1) + twoRank.rawValue)
-        case .flush(_, let rank):
+        case .flush(_, let ranks):
             handCompareValue = 5
-            rankCompareValue = Int64(rank.rawValue)
+            rankCompareValue = ranks.compareValue
         case .straight(let rank):
             handCompareValue = 4
             rankCompareValue = Int64(rank.rawValue)
