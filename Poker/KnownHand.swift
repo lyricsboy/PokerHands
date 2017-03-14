@@ -105,7 +105,7 @@ enum KnownHand: Equatable, Comparable {
             rankCompareValue = Int64(rank.rawValue)
         case .fullHouse(threeOf: let threeRank, twoOf: let twoRank):
             handCompareValue = 6
-            rankCompareValue = Int64((threeRank.rawValue << 1) + twoRank.rawValue)
+            rankCompareValue = [threeRank, twoRank].compareValue
         case .flush(_, let ranks):
             handCompareValue = 5
             rankCompareValue = ranks.compareValue
