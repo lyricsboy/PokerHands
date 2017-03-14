@@ -10,7 +10,7 @@ import Foundation
 
 enum KnownHand: Equatable, Comparable {
     case highCard([Rank])
-    case pair(Rank)
+    case pair(pairRank: Rank, otherRanks: [Rank])
     case twoPair(Rank, Rank)
     case threeOfAKind(Rank)
     case straight(Rank)
@@ -53,7 +53,7 @@ enum KnownHand: Equatable, Comparable {
         if pairs.count == 2 {
             return .twoPair(pairs[0].key, pairs[1].key)
         } else if pairs.count == 1 {
-            return .pair(pairs[0].key)
+            return .pair(pairRank: pairs[0].key, otherRanks: rankGroupsSortedByCount.dropFirst().map { $0.key }.sorted().reversed())
         }
         
         // at this point we know there are no two cards of the same rank
@@ -111,18 +111,25 @@ enum KnownHand: Equatable, Comparable {
         case .twoPair(let rank1, let rank2):
             handCompareValue = 2
             rankCompareValue = Int64(rank1.rawValue + rank2.rawValue)
-        case .pair(let rank):
+        case .pair(let pairRank, let otherRanks):
             handCompareValue = 1
-            rankCompareValue = Int64(rank.rawValue)
+            rankCompareValue = ([pairRank] + otherRanks).compareValue
         case .highCard(let ranks):
             handCompareValue = 0
-            rankCompareValue = ranks.enumerated().reduce(0, { (total, current: (offset: Int, rank: Rank)) -> Int64 in
-                total + (current.rank.rawValue << (ranks.count - 1) - current.offset)
-            })
+            rankCompareValue = ranks.compareValue
         }
         // leave five least-significant bytes for rankCompareValue
         // remaining most significant bytes are for handCompareValue
         return (1 << (5 + handCompareValue)) + rankCompareValue
+    }
+}
+
+extension Collection where IndexDistance == Int, Iterator.Element == Rank {
+    
+    var compareValue: Int64 {
+        return enumerated().reduce(0, { (total, current: (offset: Int, rank: Rank)) -> Int64 in
+            total + (Int64(current.rank.rawValue) << Int64((count - 1) - current.offset))
+        })
     }
 }
 
@@ -142,8 +149,8 @@ func ==(lhs: KnownHand, rhs: KnownHand) -> Bool {
         return lrank == rrank
     case (.twoPair(let lrank1, let lrank2), .twoPair(let rrank1, let rrank2)):
         return lrank1 == rrank1 && lrank2 == rrank2
-    case (.pair(let lrank), .pair(let rrank)):
-        return lrank == rrank
+    case (.pair(let lpairRank, let lotherRanks), .pair(let rpairRank, let rotherRanks)):
+        return lpairRank == rpairRank && lotherRanks == rotherRanks
     case (.highCard(let lranks), .highCard(let rranks)):
         return lranks == rranks
     default:
