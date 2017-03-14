@@ -51,7 +51,7 @@ class KnownHandTests: XCTestCase {
     func testThreeOfAKind() {
         let threeFours = PokerHand(string: "4H 4C 4S AS KS")
         XCTAssertNotNil(threeFours)
-        XCTAssertEqual(KnownHand.from(pokerHand: threeFours!), .threeOfAKind(.four))
+        XCTAssertEqual(KnownHand.from(pokerHand: threeFours!), .threeOfAKind(threeRank: .four, otherRanks: [.ace, .king]))
     }
     
     func testFourOfAKind() {
@@ -153,6 +153,12 @@ class KnownHandTests: XCTestCase {
         let queensAndJacksAndFive = KnownHand.twoPair(highPairRank: .queen, lowPairRank: .jack, otherRank: .five)
         let queensAndJacksAndFour = KnownHand.twoPair(highPairRank: .queen, lowPairRank: .jack, otherRank: .four)
         XCTAssertGreaterThan(queensAndJacksAndFive, queensAndJacksAndFour)
+    }
+    
+    func testComparison_ThreeOfAKind() {
+        let threeJacksFiveFour = KnownHand.threeOfAKind(threeRank: .jack, otherRanks: [.five, .four])
+        let threeJacksFiveThree = KnownHand.threeOfAKind(threeRank: .jack, otherRanks: [.five, .three])
+        XCTAssertGreaterThan(threeJacksFiveFour, threeJacksFiveThree)
     }
     
 }
