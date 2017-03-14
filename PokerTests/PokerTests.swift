@@ -96,4 +96,19 @@ class PokerTests: XCTestCase {
         XCTAssertEqual(KnownHand.from(pokerHand: sevenHigh!), .highCard(.seven))
     }
     
+    func testPairs() {
+        let pairOfFours = "4H 4D QD JD AH"
+        
+        let pairOfFoursHand = PokerHand(string: pairOfFours)
+        XCTAssertNotNil(pairOfFoursHand)
+        
+        var knownHand = KnownHand.from(pokerHand: pairOfFoursHand!)
+        XCTAssertEqual(knownHand, KnownHand.pair(.four))
+        
+        let pairOfQueens = "4H QD JD QH KH"
+        let pairOfQueensHand = PokerHand(string: pairOfQueens)
+        XCTAssertNotNil(pairOfQueensHand)
+        knownHand = KnownHand.from(pokerHand: pairOfQueensHand!)
+        XCTAssertEqual(knownHand, KnownHand.pair(.queen))
+    }
 }

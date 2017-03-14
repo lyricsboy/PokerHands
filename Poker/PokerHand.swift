@@ -54,6 +54,7 @@ func <(lhs: Rank, rhs: Rank) -> Bool {
 
 enum KnownHand: Equatable {
     case highCard(Rank)
+    case pair(Rank)
 
     static func from(pokerHand: PokerHand) -> KnownHand {
         // prefer the best hand
@@ -67,6 +68,8 @@ enum KnownHand: Equatable {
 
 func ==(lhs: KnownHand, rhs: KnownHand) -> Bool {
     switch (lhs, rhs) {
+    case (.pair(let lrank), .pair(let rrank)):
+        return lrank == rrank
     case (.highCard(let lrank), .highCard(let rrank)):
         return lrank == rrank
     // TODO: The rest of them
