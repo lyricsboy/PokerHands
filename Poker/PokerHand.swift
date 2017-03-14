@@ -46,7 +46,7 @@ enum Rank: Int {
     
 }
 
-struct Card {
+struct Card: Equatable {
     let suit: Suit
     let rank: Rank
     
@@ -71,6 +71,10 @@ struct Card {
         self.suit = suit
         self.rank = rank
     }
+}
+
+func ==(lhs: Card, rhs: Card) -> Bool {
+    return lhs.suit == rhs.suit && lhs.rank == rhs.rank
 }
 
 struct PokerHand {
