@@ -142,28 +142,7 @@ extension Collection where IndexDistance == Int, Iterator.Element == Rank {
 }
 
 func ==(lhs: KnownHand, rhs: KnownHand) -> Bool {
-    switch (lhs, rhs) {
-    case (.fullHouse(let ltriple, let lpair), .fullHouse(let rtriple, let rpair)):
-        return ltriple == rtriple && lpair == rpair
-    case (.straightFlush(let lsuit, let lrank), .straightFlush(let rsuit, let rrank)):
-        return lsuit == rsuit && lrank == rrank
-    case (.flush(let lsuit, let lrank), .flush(let rsuit, let rrank)):
-        return lsuit == rsuit && lrank == rrank
-    case (.straight(let lrank), .straight(let rrank)):
-        return lrank == rrank
-    case (.fourOfAKind(let lrank), .fourOfAKind(let rrank)):
-        return lrank == rrank
-    case (.threeOfAKind(let lthreeRank, let lotherRanks), .threeOfAKind(let rthreeRank, let rotherRanks)):
-        return lthreeRank == rthreeRank && lotherRanks == rotherRanks
-    case (.twoPair(let lhighPairRank, let llowPairRank, let lotherRank), .twoPair(let rhighPairRank, let rlowPairRank, let rotherRank)):
-        return lhighPairRank == rhighPairRank && llowPairRank == rlowPairRank && lotherRank == rotherRank
-    case (.pair(let lpairRank, let lotherRanks), .pair(let rpairRank, let rotherRanks)):
-        return lpairRank == rpairRank && lotherRanks == rotherRanks
-    case (.highCard(let lranks), .highCard(let rranks)):
-        return lranks == rranks
-    default:
-        return false
-    }
+    return lhs.compareValue == rhs.compareValue
 }
 
 func <(lhs: KnownHand, rhs: KnownHand) -> Bool {
