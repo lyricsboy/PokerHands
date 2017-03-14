@@ -77,6 +77,14 @@ func ==(lhs: Card, rhs: Card) -> Bool {
     return lhs.suit == rhs.suit && lhs.rank == rhs.rank
 }
 
+extension Card: Hashable {
+    
+    var hashValue: Int {
+        return suit.hashValue ^ rank.hashValue
+    }
+}
+
+
 struct PokerHand {
     
     let cards: [Card]
@@ -88,6 +96,10 @@ struct PokerHand {
         }
         let validCards = stringCards.flatMap {
             Card(string: $0)
+        }
+        // only a five-card hand of non-duplicates is valid
+        guard Array(Set<Card>(validCards)).count == 5 else {
+            return nil
         }
         self.cards = validCards
     }
