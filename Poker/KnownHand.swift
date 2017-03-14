@@ -16,7 +16,7 @@ enum KnownHand: Equatable, Comparable {
     case straight(Rank)
     case flush(suit: Suit, ranks: [Rank])
     case fullHouse(threeOf: Rank, twoOf: Rank)
-    case fourOfAKind(Rank)
+    case fourOfAKind(fourOf: Rank, otherRank: Rank)
     case straightFlush(Suit, Rank)
     
     static func from(pokerHand: PokerHand) -> KnownHand {
@@ -39,7 +39,7 @@ enum KnownHand: Equatable, Comparable {
         
         // four of a kind
         if let fourOfAKind = rankGroupsSortedByCount.first, fourOfAKind.value.count == 4 {
-            return .fourOfAKind(fourOfAKind.key)
+            return .fourOfAKind(fourOf: fourOfAKind.key, otherRank: rankGroupsSortedByCount.dropFirst().first!.key)
         }
         
         // three of a kind
@@ -100,9 +100,9 @@ enum KnownHand: Equatable, Comparable {
         case .straightFlush(_, let rank):
             handCompareValue = 8
             rankCompareValue = Int64(rank.rawValue)
-        case .fourOfAKind(let rank):
+        case .fourOfAKind(let fourRank, let otherRank):
             handCompareValue = 7
-            rankCompareValue = Int64(rank.rawValue)
+            rankCompareValue = [fourRank, otherRank].compareValue
         case .fullHouse(threeOf: let threeRank, twoOf: let twoRank):
             handCompareValue = 6
             rankCompareValue = [threeRank, twoRank].compareValue

@@ -57,7 +57,7 @@ class KnownHandTests: XCTestCase {
     func testFourOfAKind() {
         let fourFours = PokerHand(string: "4H 4C 4D 4S AS")
         XCTAssertNotNil(fourFours)
-        XCTAssertEqual(KnownHand.from(pokerHand: fourFours!), .fourOfAKind(.four))
+        XCTAssertEqual(KnownHand.from(pokerHand: fourFours!), .fourOfAKind(fourOf: .four, otherRank: .ace))
     }
     
     func testFullHouse() {
@@ -165,6 +165,12 @@ class KnownHandTests: XCTestCase {
         let heartFlushLowThree = KnownHand.flush(suit: .heart, ranks: [.jack, .seven, .six, .five, .three])
         let heartFlushLowTwo = KnownHand.flush(suit: .heart, ranks: [.jack, .seven, .six, .five, .two])
         XCTAssertGreaterThan(heartFlushLowThree, heartFlushLowTwo)
+    }
+    
+    func testComparison_FourOfAKind() {
+        let fourJacksAndThree = KnownHand.fourOfAKind(fourOf: .jack, otherRank: .three)
+        let fourJacksAndTwo = KnownHand.fourOfAKind(fourOf: .jack, otherRank: .two)
+        XCTAssertGreaterThan(fourJacksAndThree, fourJacksAndTwo)
     }
     
 }
